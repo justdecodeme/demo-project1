@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .calculator {
+      background: orange;
+      width: 400px;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 20px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      text-align: center;
+      padding-bottom: 10px;
+    }
+    input {
+      border: none;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 10px 0;
+      margin-bottom: 20px;
+      text-align: center;
+      color: white;
+    }
+    input:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+    input.error {
+      background: rgba(255, 0, 0, 0.4);
+    }
+    button {
+      padding: 10px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h1>JS Calculator</h1>
+    <input type="number" placeholder="input 1" id="input1">
+    <input type="number" placeholder="input 2" id="input2">
+    <input type="number" placeholder="output" id="output" disabled>
+    <div class="buttons">
+      <button data-operator="+">+</button>
+      <button data-operator="-">-</button>
+      <button data-operator="*">*</button>
+      <button data-operator="/">/</button>
+      <button data-operator="%">Rem</button>
+    </div>
+  </div>
+
+  <script>
+    var input1 = document.getElementById('input1');
+    var input2 = document.getElementById('input2');
+    var output = document.getElementById('output');
+    var result;
+
+    var buttons = document.getElementsByTagName('button');
+
+    for(var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() {
+
+        var num1 = input1.value;
+        var num2 = input2.value;
+        var operator = this.dataset.operator;
+
+        if(num1 == "") {
+          input1.classList.add('error');
+        }
+        if(num2 == "") {
+          input2.classList.add('error');
+        }
+
+
+        if(num1 != "" && num2 != "") {
+
+          num1 = parseInt(num1);
+          num2 = parseInt(num2);
+
+          if(operator == "+") {
+            result = num1 + num2;
+          } else if(operator == '-') {
+            result = num1 - num2;
+          } else if(operator == '*') {
+            result = num1 * num2;
+          } else if(operator == '/') {
+            result = num1 / num2;
+          } else if(operator == '%') {
+            result = num1 % num2;
+          }
+          output.value = result;
+        }
+
+      })
+    }
+
+    input1.addEventListener('focus', function() {
+      this.classList.remove('error');
+    })
+    input2.addEventListener('focus', function() {
+      this.classList.remove('error');
+    })
+
+
+  </script>
+</body>
+</html>
