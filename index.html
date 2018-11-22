@@ -4,115 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>Drawing App</title>
   <style>
-    .calculator {
+    body {
+      overflow: hidden;
+    }
+    .options {
       background: orange;
-      width: 400px;
-      border-radius: 10px;
-      padding: 20px;
-      margin: 0 auto;
+      padding: 20px 20px 0;
+      width: 150px;
+      float: left;
+      box-sizing: border-box;
     }
-    h1 {
-      margin: 0 0 20px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-      text-align: center;
-      padding-bottom: 10px;
-    }
-    input {
-      border: none;
+    input, button {
       width: 100%;
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      padding: 10px 0;
       margin-bottom: 20px;
-      text-align: center;
-      color: white;
     }
-    input:hover {
-      background: rgba(0, 0, 0, 0.2);
-    }
-    .buttons {
-      display: flex;
-      justify-content: space-between;
-    }
-    input.error {
-      background: rgba(255, 0, 0, 0.4);
-    }
-    button {
-      padding: 10px;
-      font-size: 20px;
+    canvas {
+      background: lightgrey;
+      float: left;
+      border: 1px solid black;
     }
   </style>
 </head>
 <body>
-  <div class="calculator">
-    <h1>JS Calculator</h1>
-    <input type="number" placeholder="input 1" id="input1">
-    <input type="number" placeholder="input 2" id="input2">
-    <input type="number" placeholder="output" id="output" disabled>
-    <div class="buttons">
-      <button data-operator="+">+</button>
-      <button data-operator="-">-</button>
-      <button data-operator="*">*</button>
-      <button data-operator="/">/</button>
-      <button data-operator="%">Rem</button>
-    </div>
+  <div class="options">
+    <input type="color" id="color">
+    <input type="range" min="1" max="10" step="1" id="range" value="3">
+    <button id="freehand">Freehand</button>
+    <button id="rectangle">Rectangle</button>
+    <button id="clear">Clear</button>
+    <button id="save">Save</button>
   </div>
+  <canvas id="cv" width="400" height="300"></canvas>
 
   <script>
-    var input1 = document.getElementById('input1');
-    var input2 = document.getElementById('input2');
-    var output = document.getElementById('output');
-    var result;
+  var colorPicker = document.getElementById('color');
+  var range = document.getElementById('range');
+  var clearBtn = document.getElementById('clear');
+  var freehandBtn = document.getElementById('freehand');
+  var rectangleBtn = document.getElementById('rectangle');
+  var saveBtn = document.getElementById('save');
+  var cv = document.getElementById('cv');
+  var ctx = cv.getContext('2d');
+  var cw = cv.width;
+  var ch = cv.height;
+  var drawing = false;
+  var tool = "freehand";
+  var x1, y1, x2, y2;
 
-    var buttons = document.getElementsByTagName('button');
+  // colorPicker.addEventListener('change', function() {
+  //   console.log(colorPicker.value)
+  // })
+  clearBtn.addEventListener('click', function() {
+    ctx.clearRect(0, 0, cw, ch);
+  })
+  freehandBtn.addEventListener('click', function() {
+    tool = "freehand";
+  })
+  rectangleBtn.addEventListener('click', function() {
+    tool = "rectangle";
+  })
+  saveBtn.addEventListener('click', function() {
+    var dataURL = cv.toDataURL("image/png");
+    window.location = dataURL;
+  })
+  cv.addEventListener('mousedown', function(e) {
+    x1 = e.clientX - cv.offsetLeft;
+    y1 = e.clientY - cv.offsetTop;
+    drawing = true;
 
-    for(var i = 0; i < buttons.length; i++) {
-      buttons[i].addEventListener('click', function() {
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = range.value;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+  })
+  cv.addEventListener('mousemove', function(e) {
+    x2 = e.clientX - cv.offsetLeft;
+    y2 = e.clientY - cv.offsetTop;
 
-        var num1 = input1.value;
-        var num2 = input2.value;
-        var operator = this.dataset.operator;
-
-        if(num1 == "") {
-          input1.classList.add('error');
-        }
-        if(num2 == "") {
-          input2.classList.add('error');
-        }
-
-
-        if(num1 != "" && num2 != "") {
-
-          num1 = parseInt(num1);
-          num2 = parseInt(num2);
-
-          if(operator == "+") {
-            result = num1 + num2;
-          } else if(operator == '-') {
-            result = num1 - num2;
-          } else if(operator == '*') {
-            result = num1 * num2;
-          } else if(operator == '/') {
-            result = num1 / num2;
-          } else if(operator == '%') {
-            result = num1 % num2;
-          }
-          output.value = result;
-        }
-
-      })
+    if(drawing && tool == "freehand") {
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
     }
-
-    input1.addEventListener('focus', function() {
-      this.classList.remove('error');
-    })
-    input2.addEventListener('focus', function() {
-      this.classList.remove('error');
-    })
-
+  })
+  cv.addEventListener('mouseup', function(e) {
+    if(drawing && tool == "rectangle") {
+      var w = x2 - x1;
+      var h = y2 - y1;
+      ctx.strokeRect(x1, y1, w, h);
+      ctx.stroke();
+    }
+    drawing = false;
+  })
 
   </script>
+
 </body>
 </html>
